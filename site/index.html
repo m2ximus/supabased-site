@@ -42,7 +42,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --fog: #E9EDF1;
@@ -50,12 +50,14 @@
     --ink: #17202B;
     --muted: #56616D;
     --cobalt: #2F4FD0;
+    --supa: #3ECF8E;
+    --supa-deep: #24A06B;
     --night: #121A26;
     --night-line: #26324A;
     --term-text: #C9D3E0;
     --term-dim: #6F7D91;
     --ok: #8FD1A8;
-    --sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
     /* motion tokens (transitions.dev scale) */
@@ -86,21 +88,20 @@
     color: var(--ink); text-decoration: none;
     font-weight: 700; font-size: 1.125rem; letter-spacing: -0.015em;
   }
-  .brand svg { display: block; color: var(--cobalt); overflow: visible; }
-  .brand path { stroke-dasharray: 78; }
+  .brand svg { display: block; color: var(--supa); overflow: visible; }
   .brand span { display: inline-block; }
   @media (prefers-reduced-motion: no-preference) {
     .brand path {
-      animation: draw var(--duration-very-slow) var(--ease-in-out) both;
+      animation: strike var(--duration-very-slow) var(--ease-smooth-out) both;
     }
     .brand span {
       animation: rise var(--duration-slow) var(--ease-smooth-out) var(--duration-micro) both;
     }
   }
-  @keyframes draw {
-    from { stroke-dashoffset: 78; opacity: 0; }
-    10%  { opacity: 1; }
-    to   { stroke-dashoffset: 0; opacity: 1; }
+  @keyframes strike {
+    from { clip-path: inset(0 0 100% 0); opacity: 0; }
+    12%  { opacity: 1; }
+    to   { clip-path: inset(0 0 0 0); opacity: 1; }
   }
   @keyframes rise {
     from { opacity: 0; transform: translateY(var(--distance-medium)); }
@@ -196,8 +197,7 @@
 <body>
 <main>
   <a class="brand" href="/">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
     </svg>
     <span>Supabased</span>
