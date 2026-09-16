@@ -45,10 +45,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --fog: #E9EDF1;
-    --paper: #F7F9FB;
+    --chalk: #F5F4EF;
+    --paper: #FFFFFF;
+    --chip: #EAE8E1;
+    --line: #DDD9CF;
     --ink: #17202B;
-    --muted: #56616D;
+    --muted: #5A6068;
     --cobalt: #2F4FD0;
     --supa: #3ECF8E;
     --supa-deep: #24A06B;
@@ -61,40 +63,47 @@
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
     /* motion tokens (transitions.dev scale) */
+    --duration-stagger: 40ms;
     --duration-micro: 80ms;
+    --duration-quick: 150ms;
+    --duration-fast: 250ms;
     --duration-slow: 400ms;
     --duration-very-slow: 500ms;
     --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-in-out: ease-in-out;
+    --distance-micro: 4px;
     --distance-medium: 12px;
+    --scale-small: 0.98;
+    --blur-small: 2px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: var(--fog);
+    background: var(--chalk);
     color: var(--ink);
     font: 400 1.0625rem/1.6 var(--sans);
     padding-inline: 20px;
   }
   main { max-width: 46rem; margin: 0 auto; padding-block: 4.5rem 3rem; }
   a { color: var(--cobalt); text-underline-offset: 3px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   :focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 4px; }
 
   /* Wordmark: bolt draws itself once on load, name follows */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; }
   .brand {
     display: inline-flex; align-items: center; gap: 0.5rem;
-    margin-bottom: 2.5rem;
     color: var(--ink); text-decoration: none;
     font-weight: 700; font-size: 1.125rem; letter-spacing: -0.015em;
   }
   .brand svg { display: block; color: var(--supa); overflow: visible; }
   .brand span { display: inline-block; }
   @media (prefers-reduced-motion: no-preference) {
-    .brand path {
+    .top .brand path {
       animation: strike var(--duration-very-slow) var(--ease-smooth-out) both;
     }
-    .brand span {
+    .top .brand span {
       animation: rise var(--duration-slow) var(--ease-smooth-out) var(--duration-micro) both;
     }
   }
@@ -106,6 +115,27 @@
   @keyframes rise {
     from { opacity: 0; transform: translateY(var(--distance-medium)); }
     to   { opacity: 1; transform: none; }
+  }
+
+  /* GitHub stars */
+  .stars {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.7rem;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--paper);
+    color: var(--ink); text-decoration: none; font-size: 0.875rem; font-weight: 600;
+    transition: border-color var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-smooth-out);
+  }
+  .stars:hover { border-color: #BDB8AB; transform: translateY(-1px); }
+  .stars svg { display: block; }
+  .stars .count {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    background: var(--chip); border-radius: 999px; padding: 0.1rem 0.55rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stars .count[hidden] { display: none; }
+  .stars .count svg { color: #D9A21B; }
+  @media (prefers-reduced-motion: no-preference) {
+    .stars .count:not([hidden]) { animation: rise var(--duration-very-slow) var(--ease-smooth-out) both; --distance-medium: 4px; }
   }
 
   h1 {
@@ -120,23 +150,83 @@
   h2 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.01em; font-weight: 600; margin: 0 0 1rem; }
   section { margin-top: 4.5rem; }
   p { margin: 0 0 1rem; max-width: 38rem; }
-  code { font-family: var(--mono); font-size: 0.9em; background: var(--paper); padding: 0.1em 0.35em; border-radius: 4px; }
+  code { font-family: var(--mono); font-size: 0.9em; background: var(--chip); padding: 0.1em 0.35em; border-radius: 4px; }
 
   /* Install command */
   .install {
-    display: flex; align-items: stretch;
-    background: var(--paper); border: 1px solid #CDD5DE; border-radius: 10px;
-    overflow: hidden;
+    position: relative;
+    display: flex; align-items: center; gap: 0.75rem;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 0.5rem 0.5rem 0.5rem 1.1rem;
+    box-shadow: 0 1px 0 rgba(23, 32, 43, 0.03), 0 8px 24px -16px rgba(23, 32, 43, 0.18);
   }
   .install pre {
-    margin: 0; padding: 1rem 1.1rem; flex: 1; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere;
-    font: 400 0.9rem/1.5 var(--mono); color: var(--ink);
+    margin: 0; padding: 0.5rem 0; flex: 1; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere;
+    font: 400 0.9rem/1.55 var(--mono); color: var(--ink);
   }
-  .install button {
-    font: 500 0.95rem var(--sans); color: #fff; background: var(--cobalt);
-    border: 0; padding: 0 1.25rem; cursor: pointer; white-space: nowrap;
+  .install pre::before { content: "$ "; color: #A39E91; user-select: none; }
+  .copy {
+    flex: none; align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    height: 2.4rem; padding: 0 0.85rem 0 0.75rem;
+    font: 600 0.875rem var(--sans); color: var(--ink);
+    background: var(--chalk); border: 1px solid var(--line); border-radius: 8px;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--duration-fast) var(--ease-smooth-out),
+                border-color var(--duration-fast) var(--ease-smooth-out),
+                color var(--duration-fast) var(--ease-smooth-out),
+                transform var(--duration-quick) var(--ease-smooth-out);
   }
-  .install button:hover { background: #2641B0; }
+  .copy:hover { background: var(--chip); border-color: #CBC6B9; }
+  .copy:active { transform: scale(0.96); }
+  .copy.done { background: #E3F6EC; border-color: #A9DEC2; color: #1B7A50; }
+  .copy .icons { position: relative; width: 16px; height: 16px; }
+  .copy .icons svg {
+    position: absolute; inset: 0;
+    transition: opacity var(--duration-fast) var(--ease-in-out),
+                transform var(--duration-fast) var(--ease-in-out),
+                filter var(--duration-fast) var(--ease-in-out);
+  }
+  .copy .ic-check { opacity: 0; transform: scale(0.6); filter: blur(var(--blur-small)); }
+  .copy.done .ic-copy { opacity: 0; transform: scale(0.6); filter: blur(var(--blur-small)); }
+  .copy.done .ic-check { opacity: 1; transform: none; filter: none; }
+  .copy .label { display: inline-grid; }
+  .copy .label span {
+    grid-area: 1 / 1; text-align: left;
+    transition: opacity var(--duration-quick) var(--ease-in-out),
+                transform var(--duration-quick) var(--ease-in-out),
+                filter var(--duration-quick) var(--ease-in-out);
+  }
+  .copy .label .l-done { opacity: 0; transform: translateY(var(--distance-micro)); filter: blur(var(--blur-small)); }
+  .copy.done .l-idle { opacity: 0; transform: translateY(calc(-1 * var(--distance-micro))); filter: blur(var(--blur-small)); }
+  .copy.done .l-done { opacity: 1; transform: none; filter: none; }
+  .confetti { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 10; font-size: 1.1rem; line-height: 1; will-change: transform, opacity; }
+
+  /* Diagram: accounts → terminals → databases */
+  .flow {
+    margin: 2.5rem 0 0;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
+    padding: 1rem 0.75rem 0.75rem;
+  }
+  .flow svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .flow figcaption { font-size: 0.9rem; color: var(--muted); padding: 0.5rem 0.5rem 0.25rem; margin: 0; }
+  .flow .col { paint-order: stroke; stroke: var(--paper); stroke-width: 8px; stroke-linejoin: round; font: 600 10px var(--sans); letter-spacing: 0.08em; fill: #9A958A; text-transform: uppercase; }
+  .flow .card { fill: var(--paper); stroke: var(--line); stroke-width: 1; transition: stroke var(--duration-fast) var(--ease-smooth-out); }
+  .flow .name { font: 600 12.5px var(--sans); fill: var(--ink); }
+  .flow .tok { font: 400 10px var(--mono); fill: #8C877B; }
+  .flow .wire { fill: none; stroke: #E3E0D7; stroke-width: 1.5; transition: stroke var(--duration-fast) var(--ease-smooth-out); }
+  .flow .tbox { fill: var(--night); transition: filter var(--duration-fast) var(--ease-smooth-out); }
+  .flow .tdim { font: 400 10px var(--mono); fill: var(--term-dim); }
+  .flow .tcmd { font: 400 10.5px var(--mono); fill: var(--term-text); white-space: pre; }
+  .flow .tsbx { font: 500 10.5px var(--mono); opacity: 0; transition: opacity var(--duration-quick) var(--ease-in-out); }
+  .flow .tsbx.on { opacity: 1; }
+  .flow .db-body { fill: #F1EFE9; stroke: var(--line); transition: fill var(--duration-slow) var(--ease-smooth-out), stroke var(--duration-slow) var(--ease-smooth-out); }
+  .flow .db.on .db-body { fill: #E3F6EC; stroke: #8FD1A8; }
+  .flow .db-bolt { fill: #C9C4B8; transition: fill var(--duration-slow) var(--ease-smooth-out); }
+  .flow .db.on .db-bolt { fill: var(--supa); }
+  .flow .db-ok { font: 600 10px var(--sans); fill: var(--supa-deep); opacity: 0; transition: opacity var(--duration-quick) var(--ease-in-out); }
+  .flow .db.on .db-ok { opacity: 1; }
+
   .req { font-size: 0.95rem; color: var(--muted); margin-top: 0.75rem; }
 
   /* Terminal demo: the one loud thing */
@@ -160,7 +250,7 @@
 
   /* Steps (a real sequence) */
   ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
-  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 2.25rem 1fr; gap: 0 0.75rem; padding: 1.1rem 0; border-top: 1px solid #CDD5DE; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 2.25rem 1fr; gap: 0 0.75rem; padding: 1.1rem 0; border-top: 1px solid var(--line); }
   ol.steps li::before { content: counter(s); font-weight: 600; color: var(--cobalt); font-size: 1.1rem; line-height: 1.5; }
   ol.steps strong { display: block; font-weight: 600; }
   ol.steps p { margin: 0.2rem 0 0; color: var(--muted); }
@@ -170,8 +260,8 @@
   ul.facts strong { font-weight: 600; }
   ul.facts span { color: var(--muted); }
 
-  .faq details { border-top: 1px solid #CDD5DE; }
-  .faq details:last-child { border-bottom: 1px solid #CDD5DE; }
+  .faq details { border-top: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 1px solid var(--line); }
   .faq summary { cursor: pointer; font-weight: 500; padding: 0.9rem 2rem 0.9rem 0; list-style: none; position: relative; }
   .faq summary::-webkit-details-marker { display: none; }
   .faq summary::after { content: "+"; position: absolute; right: 0.25rem; top: 0.8rem; color: var(--cobalt); font-size: 1.25rem; line-height: 1; transition: transform 160ms ease; }
@@ -179,16 +269,19 @@
   .faq details p { color: var(--muted); margin: 0 0 1rem; }
   @media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }
 
-  footer { max-width: 46rem; margin: 0 auto; padding-block: 2rem 3rem; border-top: 1px solid #CDD5DE; color: var(--muted); font-size: 0.95rem; }
+  footer { max-width: 46rem; margin: 0 auto; padding-block: 2rem 3rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
   footer p { margin: 0 0 0.5rem; }
-  footer .made { color: var(--ink); font-weight: 600; }
-  footer .links { display: flex; gap: 1.25rem; }
+  footer .brand { margin-bottom: 0.9rem; font-size: 1rem; }
+  footer .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
   footer .fine { margin-top: 1.25rem; font-size: 0.8rem; color: #8A94A0; }
 
   @media (max-width: 560px) {
     main { padding-block: 3rem 2rem; }
-    .install { flex-direction: column; }
-    .install button { padding: 0.8rem; }
+    .install { padding-left: 0.9rem; }
+    .install pre { font-size: 0.82rem; }
+    .copy .label { display: none; }
+    .copy { padding: 0 0.7rem; }
+    .flow { padding-inline: 0.25rem; }
     .term { font-size: 0.8rem; min-height: 19rem; }
   }
   @media (prefers-reduced-motion: reduce) { .term .caret { animation: none; } }
@@ -196,20 +289,39 @@
 </head>
 <body>
 <main>
-  <a class="brand" href="/">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
-    </svg>
-    <span>Supabased</span>
-  </a>
+  <header class="top">
+    <a class="brand" href="/">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+      </svg>
+      <span>Supabased</span>
+    </a>
+    <a class="stars" href="https://github.com/m2ximus/supabased" aria-label="Supabased on GitHub">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span>Star</span>
+      <span class="count" id="stars" hidden><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .9l2.2 4.6 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7z"/></svg><span></span></span>
+    </a>
+  </header>
   <h1>Every Supabase account, one terminal.</h1>
   <p class="lede">The Supabase CLI only remembers one login. Supabased keeps all your Supabase accounts connected in the terminal and switches to the right one when you <code>cd</code> into a project.</p>
 
   <div class="install">
     <pre id="cmd">git clone https://github.com/m2ximus/supabased.git ~/supabased && ~/supabased/install.sh</pre>
-    <button type="button" id="copy">Copy</button>
+    <button type="button" class="copy" id="copy" aria-label="Copy install command">
+      <span class="icons" aria-hidden="true">
+        <svg class="ic-copy" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="5.25" y="5.25" width="8.5" height="8.5" rx="2"/><path d="M10.75 3.25a1.5 1.5 0 0 0-1.5-1.5h-5.5a2 2 0 0 0-2 2v5.5a1.5 1.5 0 0 0 1.5 1.5"/></svg>
+        <svg class="ic-check" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>
+      </span>
+      <span class="label" aria-hidden="true"><span class="l-idle">Copy</span><span class="l-done">Copied</span></span>
+    </button>
+    <span class="sr-only" id="copy-status" aria-live="polite"></span>
   </div>
   <p class="req">Runs on macOS with zsh and the <a href="https://supabase.com/docs/guides/cli/getting-started">Supabase CLI</a>. Everything installs and runs on your own machine.</p>
+
+  <figure class="flow">
+    <svg id="flow" role="img" aria-labelledby="flow-cap"></svg>
+    <figcaption id="flow-cap">You save each Supabase account once. Every terminal then runs <code>supabase</code> with the token of the account that owns that folder's project, so each command reaches the right database.</figcaption>
+  </figure>
 
   <div class="term" role="img" aria-label="Terminal demo: moving between two project folders, sbx uses the client account in one and the personal account in the other.">
     <div class="bar"><i></i><i></i><i></i></div>
@@ -282,20 +394,269 @@
   </section>
 </main>
 <footer>
-  <p class="made">Supabased — Made by <a href="https://max-os.xyz">Max</a></p>
-  <p class="links"><a href="https://github.com/m2ximus">GitHub</a><a href="https://x.com/maxrichardson">X</a></p>
+  <a class="brand" href="/">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+    </svg>
+    <span>Supabased</span>
+  </a>
+  <p class="links"><span>Made by <a href="https://max-os.xyz">Max</a></span><a href="https://github.com/m2ximus">GitHub</a><a href="https://x.com/maxrichardson">X</a></p>
   <p class="fine">Supabased is free and open source. Supabased is not affiliated with Supabase.</p>
 </footer>
 
 <script>
-  document.getElementById('copy').addEventListener('click', async (e) => {
-    const btn = e.currentTarget;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // Copy button: icon + label swap, then a little party
+  const copyBtn = document.getElementById('copy');
+  const copyStatus = document.getElementById('copy-status');
+  let copyTimer;
+  copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(document.getElementById('cmd').textContent);
-      btn.textContent = 'Copied';
-    } catch { btn.textContent = 'Select and copy'; }
-    setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+    } catch {
+      copyStatus.textContent = 'Copy failed. Select the command and copy it.';
+      return;
+    }
+    copyBtn.classList.add('done');
+    copyStatus.textContent = 'Copied to clipboard';
+    party(copyBtn);
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => { copyBtn.classList.remove('done'); copyStatus.textContent = ''; }, 2000);
   });
+
+  function party(el) {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const bits = reduce ? ['🎉'] : ['🎉', '🎉', '✨', '🎉', '🥳', '✨', '🎉'];
+    bits.forEach((ch, i) => {
+      const n = document.createElement('span');
+      n.className = 'confetti';
+      n.textContent = ch;
+      document.body.appendChild(n);
+      const start = `translate(${x - 9}px, ${y - 9}px)`;
+      if (reduce) {
+        n.animate([{ transform: start + ' translateY(-24px)', opacity: 1 }, { transform: start + ' translateY(-24px)', opacity: 0 }],
+          { duration: 900, easing: 'ease-out' }).onfinish = () => n.remove();
+        return;
+      }
+      const a = (-90 + (i - (bits.length - 1) / 2) * 24) * Math.PI / 180;
+      const d = 46 + Math.random() * 30;
+      const dx = Math.cos(a) * d, dy = Math.sin(a) * d;
+      const rot = (Math.random() - 0.5) * 70;
+      n.animate([
+        { transform: `${start} translate(0, 0) scale(0.4) rotate(0deg)`, opacity: 0 },
+        { transform: `${start} translate(${dx}px, ${dy}px) scale(1.15) rotate(${rot}deg)`, opacity: 1, offset: 0.45 },
+        { transform: `${start} translate(${dx * 1.15}px, ${dy + 30}px) scale(0.9) rotate(${rot * 1.6}deg)`, opacity: 0 },
+      ], { duration: 950 + i * 40, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }).onfinish = () => n.remove();
+    });
+  }
+
+  // GitHub stars
+  (async () => {
+    const box = document.getElementById('stars');
+    const show = (n) => { box.lastElementChild.textContent = n.toLocaleString('en'); box.hidden = false; };
+    let cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem('sb-stars')); } catch {}
+    if (cached && Date.now() - cached.t < 10 * 60e3) return show(cached.n);
+    try {
+      const res = await fetch('https://api.github.com/repos/m2ximus/supabased');
+      if (!res.ok) return;
+      const n = (await res.json()).stargazers_count;
+      if (typeof n !== 'number') return;
+      show(n);
+      try { sessionStorage.setItem('sb-stars', JSON.stringify({ n, t: Date.now() })); } catch {}
+    } catch {}
+  })();
+
+  // Diagram: your accounts → terminals → databases
+  const NS = 'http://www.w3.org/2000/svg';
+  const flow = document.getElementById('flow');
+  const ACCOUNTS = [
+    { name: 'personal', tok: 'sbp_••••4f2a', color: '#3ECF8E' },
+    { name: 'work',     tok: 'sbp_••••91cc', color: '#5B78F0' },
+    { name: 'client-x', tok: 'sbp_••••0be7', color: '#E4A11B' },
+  ];
+  // Terminal order differs from account order: sbx routes each folder to its owner.
+  const LANES = [
+    { dir: '~/client-shop',  cmd: ['supabase', 'db push'],      acct: 2, db: 'shop-prod' },
+    { dir: '~/side-project', cmd: ['supabase', 'gen types'],    acct: 0, db: 'side-db' },
+    { dir: '~/work-app',     cmd: ['supabase', 'db pull'], acct: 1, db: 'work-api' },
+  ];
+
+  function el(tag, attrs, parent, text) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  const curve = (a, b, wide) => wide
+    ? `M${a.x} ${a.y} C${(a.x + b.x) / 2} ${a.y} ${(a.x + b.x) / 2} ${b.y} ${b.x} ${b.y}`
+    : `M${a.x} ${a.y} C${a.x} ${(a.y + b.y) / 2} ${b.x} ${(a.y + b.y) / 2} ${b.x} ${b.y}`;
+
+  function build(wide) {
+    flow.replaceChildren();
+    el('title', { id: 'flow-title' }, flow, 'Diagram: three saved Supabase accounts feed three terminals, and each terminal reaches its own database.');
+    const W = wide ? 720 : 340, H = wide ? 360 : 520;
+    flow.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const wires = el('g', {}, flow);
+    const L = { accts: [], terms: [], dbs: [] };
+
+    // geometry
+    const rowY = [70, 175, 280];
+    const gap = (W - 3 * 100) / 4;
+    const colX = [0, 1, 2].map(i => gap + i * (100 + gap)); // narrow columns
+    const acctBox = (i) => wide ? { x: 110, y: rowY[i] - 26, w: 150, h: 52 } : { x: colX[i], y: 36, w: 100, h: 60 };
+    const termBox = (i) => wide ? { x: 340, y: rowY[i] - 38, w: 190, h: 76 } : { x: colX[i], y: 200, w: 100, h: 104 };
+    const dbBox   = (i) => wide ? { x: 610, y: rowY[i] - 30, w: 70, h: 60 } : { x: colX[i] + 20, y: 400, w: 60, h: 60 };
+
+    // column labels
+    const cols = wide
+      ? [[40, 'You'], [185, 'Accounts'], [435, 'Terminals'], [645, 'Databases']]
+      : [[W / 2, 'Accounts in Keychain'], [W / 2, 'Terminals'], [W / 2, 'Databases']];
+    cols.forEach(([x, t], i) => el('text', { class: 'col', x, y: wide ? 16 : [22, 186, 386][i], 'text-anchor': 'middle' }, flow, t));
+
+    if (wide) {
+      const you = el('g', {}, flow);
+      el('circle', { cx: 40, cy: 175, r: 24, fill: '#EAE8E1' }, you);
+      el('circle', { cx: 40, cy: 168, r: 7, fill: '#9A958A' }, you);
+      el('path', { d: 'M27 188a13 11 0 0 1 26 0', fill: '#9A958A' }, you);
+      L.youWires = ACCOUNTS.map((_, i) => el('path', { class: 'wire', d: curve({ x: 64, y: 175 }, { x: 110, y: rowY[i] }, true) }, wires));
+    }
+
+    ACCOUNTS.forEach((a, i) => {
+      const b = acctBox(i), g = el('g', {}, flow);
+      const card = el('rect', { class: 'card', x: b.x, y: b.y, width: b.w, height: b.h, rx: 10 }, g);
+      const kx = b.x + 20, ky = wide ? b.y + b.h / 2 : b.y + 20;
+      el('circle', { cx: kx, cy: ky, r: 11, fill: a.color, opacity: 0.16 }, g);
+      el('path', { d: `M${kx - 5} ${ky}a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M${kx + 1} ${ky}h5v3M${kx + 4} ${ky}v2`, fill: 'none', stroke: a.color, 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+      if (wide) {
+        el('text', { class: 'name', x: b.x + 40, y: b.y + 22 }, g, a.name);
+        el('text', { class: 'tok', x: b.x + 40, y: b.y + 37 }, g, a.tok);
+      } else {
+        el('text', { class: 'name', x: b.x + 10, y: b.y + 44 }, g, a.name);
+      }
+      L.accts.push({ card, color: a.color, out: wide ? { x: b.x + b.w, y: b.y + b.h / 2 } : { x: b.x + b.w / 2, y: b.y + b.h } });
+    });
+
+    LANES.forEach((lane, i) => {
+      const b = termBox(i), g = el('g', {}, flow);
+      const box = el('rect', { class: 'tbox', x: b.x, y: b.y, width: b.w, height: b.h, rx: 9 }, g);
+      [0, 1, 2].forEach(k => el('circle', { cx: b.x + 11 + k * 8, cy: b.y + 10, r: 2.3, fill: '#26324A' }, g));
+      const tx = b.x + 10, lh = 14;
+      el('text', { class: 'tdim', x: tx, y: b.y + 30 }, g, wide ? lane.dir : lane.dir.slice(2));
+      const lines = wide
+        ? [el('text', { class: 'tcmd', x: tx, y: b.y + 30 + lh }, g)]
+        : [el('text', { class: 'tcmd', x: tx, y: b.y + 30 + lh }, g), el('text', { class: 'tcmd', x: tx, y: b.y + 30 + lh * 2 }, g)];
+      const acct = ACCOUNTS[lane.acct];
+      const sbx = el('text', { class: 'tsbx', x: tx, y: b.y + 30 + lh * (wide ? 2 : 3) + (wide ? 2 : 4), fill: acct.color }, g, wide ? `sbx → ${acct.name}` : `→ ${acct.name}`);
+      const inP = wide ? { x: b.x, y: b.y + b.h / 2 } : { x: b.x + b.w / 2, y: b.y };
+      const outP = wide ? { x: b.x + b.w, y: b.y + b.h / 2 } : { x: b.x + b.w / 2, y: b.y + b.h };
+      const text = wide ? ['$ ' + lane.cmd.join(' ')] : ['$ ' + lane.cmd[0], '  ' + lane.cmd[1]];
+      L.terms.push({ box, lines, text, sbx, inP, outP });
+      L.terms[i].wireIn = el('path', { class: 'wire', d: curve(L.accts[lane.acct].out, inP, wide) }, wires);
+    });
+
+    LANES.forEach((lane, i) => {
+      const b = dbBox(i), g = el('g', { class: 'db' }, flow);
+      const cx = b.x + b.w / 2, top = b.y + 4, rx = 22, ry = 6, h = 34;
+      el('path', { class: 'db-body', d: `M${cx - rx} ${top}v${h}a${rx} ${ry} 0 0 0 ${2 * rx} 0v-${h}a${rx} ${ry} 0 0 0 -${2 * rx} 0z` }, g);
+      el('ellipse', { class: 'db-body', cx, cy: top, rx, ry }, g);
+      const s = 0.62, bx = cx - 12 * s, by = top + 8;
+      el('path', { class: 'db-bolt', transform: `translate(${bx} ${by}) scale(${s})`, d: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' }, g);
+      el('text', { class: 'name', x: cx, y: top + h + 22, 'text-anchor': 'middle', style: 'font-size:11px' }, g, lane.db);
+      el('text', { class: 'db-ok', x: cx, y: wide ? top - 12 : top + h + 36, 'text-anchor': 'middle' }, g, '✓ done');
+      const inP = wide ? { x: cx - rx, y: top + h / 2 } : { x: cx, y: top - ry - 16 };
+      const t = L.terms[i];
+      t.wireOut = el('path', { class: 'wire', d: wide ? curve(t.outP, inP, true) : `M${t.outP.x} ${t.outP.y} V${top - ry}` }, wires);
+      L.dbs.push(g);
+    });
+
+    L.dots = el('g', {}, flow);
+    return L;
+  }
+
+  function travel(L, path, color, ms) {
+    const len = path.getTotalLength();
+    const dot = el('circle', { r: 4.5, fill: color }, L.dots);
+    const halo = el('circle', { r: 9, fill: color, opacity: 0.2 }, L.dots);
+    return new Promise(done => {
+      const t0 = performance.now();
+      const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      (function step(now) {
+        const t = Math.min(1, (now - t0) / ms);
+        const p = path.getPointAtLength(ease(t) * len);
+        for (const c of [dot, halo]) { c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); }
+        if (t < 1) requestAnimationFrame(step); else { dot.remove(); halo.remove(); done(); }
+      })(t0);
+    });
+  }
+
+  function reset(L) {
+    L.terms.forEach(t => { t.lines.forEach(n => n.textContent = ''); t.sbx.classList.remove('on'); t.box.style.filter = ''; t.wireIn.style.stroke = ''; t.wireOut.style.stroke = ''; });
+    L.accts.forEach(a => a.card.style.stroke = '');
+    L.dbs.forEach(d => d.classList.remove('on'));
+  }
+
+  function finalState(L) {
+    L.terms.forEach((t, i) => {
+      t.lines.forEach((n, k) => n.textContent = t.text[k]);
+      t.sbx.classList.add('on');
+      t.wireIn.style.stroke = L.accts[LANES[i].acct].color;
+      t.wireOut.style.stroke = '#8FD1A8';
+    });
+    L.dbs.forEach(d => d.classList.add('on'));
+  }
+
+  let gen = 0, visible = true;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(flow);
+  const whenVisible = async () => { while (!visible) await sleep(300); };
+
+  async function run(wide) {
+    const me = ++gen;
+    const L = build(wide);
+    if (reduce) return finalState(L);
+    const alive = () => me === gen;
+    for (;;) {
+      reset(L);
+      await whenVisible();
+      if (!alive()) return;
+      if (L.youWires) {
+        await Promise.all(L.youWires.map((w, i) => sleep(i * 80).then(() => { w.style.stroke = '#CFCABD'; return travel(L, w, ACCOUNTS[i].color, 600); })));
+      }
+      for (let i = 0; i < LANES.length; i++) {
+        if (!alive()) return;
+        const t = L.terms[i], a = L.accts[LANES[i].acct];
+        t.box.style.filter = 'drop-shadow(0 6px 14px rgba(18,26,38,0.35))';
+        const full = t.text.join('\n');
+        for (let c = 1; c <= full.length; c++) {
+          const parts = full.slice(0, c).split('\n');
+          t.lines.forEach((n, k) => n.textContent = parts[k] ?? '');
+          await sleep(38);
+        }
+        if (!alive()) return;
+        await sleep(200);
+        a.card.style.stroke = a.color;
+        t.wireIn.style.stroke = a.color;
+        await travel(L, t.wireIn, a.color, 750);
+        t.sbx.classList.add('on');
+        a.card.style.stroke = '';
+        await sleep(250);
+        t.wireOut.style.stroke = '#8FD1A8';
+        await travel(L, t.wireOut, '#3ECF8E', 600);
+        L.dbs[i].classList.add('on');
+        t.box.style.filter = '';
+        await sleep(350);
+      }
+      await sleep(3200);
+      if (!alive()) return;
+    }
+  }
+  const wideMq = matchMedia('(min-width: 600px)');
+  run(wideMq.matches);
+  wideMq.addEventListener('change', (e) => run(e.matches));
 
   const script = [
     { p: '~', cmd: 'cd code/client-shop' },
@@ -309,9 +670,7 @@
     { out: 'Deployed Functions on project mfkdeyvqaz.' },
   ];
   const screen = document.getElementById('screen');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const prompt = (p) => `<span class="dir">${p}</span> <span class="dim">%</span> `;
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   function renderStatic() {
     screen.innerHTML = script.map(s => `<div class="line">${s.out ?? prompt(s.p) + s.cmd}</div>`).join('');
