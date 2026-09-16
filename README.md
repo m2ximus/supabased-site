@@ -11,3 +11,7 @@ Preview locally:
 ```sh
 python3 -m http.server -d site 8000
 ```
+
+---
+
+Supabased is free and open source. Supabased is not affiliated with Supabase.

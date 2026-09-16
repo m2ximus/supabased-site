@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>supabased: multiple Supabase accounts in one CLI</title>
-<meta name="description" content="Use the Supabase CLI with more than one account. supabased keeps every Supabase login connected in your terminal and switches to the right account for each project folder. Free, open source, tokens stay in your Mac's Keychain.">
+<title>Supabased: multiple Supabase accounts in one CLI</title>
+<meta name="description" content="Use the Supabase CLI with more than one account. Supabased keeps every Supabase login connected in your terminal and switches to the right account for each project folder. Free, open source, tokens stay in your Mac's Keychain.">
 <link rel="canonical" href="https://www.supabased.dev/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.supabased.dev/">
-<meta property="og:title" content="supabased: multiple Supabase accounts in one CLI">
+<meta property="og:title" content="Supabased: multiple Supabase accounts in one CLI">
 <meta property="og:description" content="Keep every Supabase account connected in your terminal. The Supabase CLI switches to the right login for each project folder.">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">
@@ -17,7 +17,7 @@
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "supabased",
+      "name": "Supabased",
       "alternateName": "sbx",
       "url": "https://www.supabased.dev/",
       "applicationCategory": "DeveloperApplication",
@@ -30,11 +30,11 @@
       "@type": "FAQPage",
       "mainEntity": [
         { "@type": "Question", "name": "Can the Supabase CLI be logged in to more than one account?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Not on its own. supabase login stores one access token at a time. supabased saves a token for each of your Supabase accounts in the macOS Keychain and gives the Supabase CLI the right one for the project folder you are in." } },
+          "acceptedAnswer": { "@type": "Answer", "text": "Not on its own. supabase login stores one access token at a time. Supabased saves a token for each of your Supabase accounts in the macOS Keychain and gives the Supabase CLI the right one for the project folder you are in." } },
         { "@type": "Question", "name": "How do I switch Supabase accounts in the CLI without logging out?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Install supabased, run sbx add for each account, then cd into a linked project. The supabase command uses the account that owns that project automatically, with no supabase logout or login." } },
+          "acceptedAnswer": { "@type": "Answer", "text": "Install Supabased, run sbx add for each account, then cd into a linked project. The supabase command uses the account that owns that project automatically, with no supabase logout or login." } },
         { "@type": "Question", "name": "Does it work with supabase link and many projects?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. After supabase link, supabased reads the project ref in the folder, finds which of your saved accounts owns that project, and uses that account. Folders can also be pinned to an account with sbx pin." } }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. After supabase link, Supabased reads the project ref in the folder, finds which of your saved accounts owns that project, and uses that account. Folders can also be pinned to an account with sbx pin." } }
       ]
     }
   ]
@@ -42,7 +42,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --fog: #E9EDF1;
@@ -55,8 +55,16 @@
     --term-text: #C9D3E0;
     --term-dim: #6F7D91;
     --ok: #8FD1A8;
-    --sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    /* motion tokens (transitions.dev scale) */
+    --duration-micro: 80ms;
+    --duration-slow: 400ms;
+    --duration-very-slow: 500ms;
+    --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: ease-in-out;
+    --distance-medium: 12px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -71,8 +79,36 @@
   a { color: var(--cobalt); text-underline-offset: 3px; }
   :focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 4px; }
 
+  /* Wordmark: bolt draws itself once on load, name follows */
+  .brand {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    color: var(--ink); text-decoration: none;
+    font-weight: 700; font-size: 1.125rem; letter-spacing: -0.015em;
+  }
+  .brand svg { display: block; color: var(--cobalt); overflow: visible; }
+  .brand path { stroke-dasharray: 78; }
+  .brand span { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .brand path {
+      animation: draw var(--duration-very-slow) var(--ease-in-out) both;
+    }
+    .brand span {
+      animation: rise var(--duration-slow) var(--ease-smooth-out) var(--duration-micro) both;
+    }
+  }
+  @keyframes draw {
+    from { stroke-dashoffset: 78; opacity: 0; }
+    10%  { opacity: 1; }
+    to   { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(var(--distance-medium)); }
+    to   { opacity: 1; transform: none; }
+  }
+
   h1 {
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2.25rem, 6vw, 3.5rem);
     line-height: 1.05;
     letter-spacing: -0.025em;
@@ -143,6 +179,10 @@
   @media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }
 
   footer { max-width: 46rem; margin: 0 auto; padding-block: 2rem 3rem; border-top: 1px solid #CDD5DE; color: var(--muted); font-size: 0.95rem; }
+  footer p { margin: 0 0 0.5rem; }
+  footer .made { color: var(--ink); font-weight: 600; }
+  footer .links { display: flex; gap: 1.25rem; }
+  footer .fine { margin-top: 1.25rem; font-size: 0.8rem; color: #8A94A0; }
 
   @media (max-width: 560px) {
     main { padding-block: 3rem 2rem; }
@@ -155,8 +195,15 @@
 </head>
 <body>
 <main>
+  <a class="brand" href="/">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+    </svg>
+    <span>Supabased</span>
+  </a>
   <h1>Every Supabase account, one terminal.</h1>
-  <p class="lede">The Supabase CLI only remembers one login. supabased keeps all your Supabase accounts connected in the terminal and switches to the right one when you <code>cd</code> into a project.</p>
+  <p class="lede">The Supabase CLI only remembers one login. Supabased keeps all your Supabase accounts connected in the terminal and switches to the right one when you <code>cd</code> into a project.</p>
 
   <div class="install">
     <pre id="cmd">git clone https://github.com/m2ximus/supabased.git ~/supabased && ~/supabased/install.sh</pre>
@@ -174,7 +221,7 @@
     <ul class="facts">
       <li><strong>Many accounts, all logged in.</strong> <span>Personal, work and client Supabase accounts stay connected to the CLI at once. No more <code>supabase logout</code> and <code>supabase login</code> every time you change project.</span></li>
       <li><strong>Many projects, the right login for each.</strong> <span>Every folder linked with <code>supabase link</code> uses the account that owns its project, so <code>supabase db push</code> goes to the database you expect.</span></li>
-      <li><strong>Works with the commands you already use.</strong> <span>Migrations, type generation, functions deploy: keep typing <code>supabase</code> and supabased handles the auth.</span></li>
+      <li><strong>Works with the commands you already use.</strong> <span>Migrations, type generation, functions deploy: keep typing <code>supabase</code> and Supabased handles the auth.</span></li>
     </ul>
   </section>
 
@@ -202,11 +249,11 @@
     <h2>Questions</h2>
     <div class="faq">
       <details><summary>Can the Supabase CLI be logged in to more than one account?</summary>
-        <p>Not on its own. <code>supabase login</code> stores one access token at a time. supabased saves a token for each of your Supabase accounts in the macOS Keychain and gives the Supabase CLI the right one for the project folder you're in.</p></details>
+        <p>Not on its own. <code>supabase login</code> stores one access token at a time. Supabased saves a token for each of your Supabase accounts in the macOS Keychain and gives the Supabase CLI the right one for the project folder you're in.</p></details>
       <details><summary>How do I switch Supabase accounts in the CLI without logging out?</summary>
         <p>Run <code>sbx add</code> once for each account, then <code>cd</code> into a linked project. The <code>supabase</code> command uses the account that owns that project, with no logout or login.</p></details>
       <details><summary>Does it work with supabase link and many projects?</summary>
-        <p>Yes. After <code>supabase link</code>, supabased reads the project ref in that folder and finds which of your accounts owns it. You can also pin a folder to an account with <code>sbx pin name</code>.</p></details>
+        <p>Yes. After <code>supabase link</code>, Supabased reads the project ref in that folder and finds which of your accounts owns it. You can also pin a folder to an account with <code>sbx pin name</code>.</p></details>
       <details><summary>What do I need first?</summary>
         <p>macOS 15 or later, zsh (the macOS default), git, and the <a href="https://supabase.com/docs/guides/cli/getting-started">Supabase CLI</a>. You can install the CLI with <code>brew install supabase/tap/supabase</code>.</p></details>
       <details><summary>Where do I get a token?</summary>
@@ -234,7 +281,11 @@
     </div>
   </section>
 </main>
-<footer>supabased is free, open source, and not affiliated with Supabase. Made by <a href="https://max-os.xyz">Max</a>.</footer>
+<footer>
+  <p class="made">Supabased — Made by <a href="https://max-os.xyz">Max</a></p>
+  <p class="links"><a href="https://github.com/m2ximus">GitHub</a><a href="https://x.com/maxrichardson">X</a></p>
+  <p class="fine">Supabased is free and open source. Supabased is not affiliated with Supabase.</p>
+</footer>
 
 <script>
   document.getElementById('copy').addEventListener('click', async (e) => {
