@@ -210,7 +210,8 @@
   }
   .flow svg { display: block; width: 100%; height: auto; overflow: visible; }
   .flow figcaption { font-size: 0.9rem; color: var(--muted); padding: 0.5rem 0.5rem 0.25rem; margin: 0; }
-  .flow .col { paint-order: stroke; stroke: var(--paper); stroke-width: 8px; stroke-linejoin: round; font: 600 10px var(--sans); letter-spacing: 0.08em; fill: #9A958A; text-transform: uppercase; }
+  .flow .col rect { fill: var(--chalk); stroke: var(--line); stroke-width: 1; }
+  .flow .col text { font: 600 9.5px var(--sans); letter-spacing: 0.1em; fill: #7C776B; text-transform: uppercase; }
   .flow .card { fill: var(--paper); stroke: var(--line); stroke-width: 1; transition: stroke var(--duration-fast) var(--ease-smooth-out); }
   .flow .name { font: 600 12.5px var(--sans); fill: var(--ink); }
   .flow .tok { font: 400 10px var(--mono); fill: #8C877B; }
@@ -512,12 +513,6 @@
     const termBox = (i) => wide ? { x: 340, y: rowY[i] - 38, w: 190, h: 76 } : { x: colX[i], y: 200, w: 100, h: 104 };
     const dbBox   = (i) => wide ? { x: 610, y: rowY[i] - 30, w: 70, h: 60 } : { x: colX[i] + 20, y: 400, w: 60, h: 60 };
 
-    // column labels
-    const cols = wide
-      ? [[40, 'You'], [185, 'Accounts'], [435, 'Terminals'], [645, 'Databases']]
-      : [[W / 2, 'Accounts in Keychain'], [W / 2, 'Terminals'], [W / 2, 'Databases']];
-    cols.forEach(([x, t], i) => el('text', { class: 'col', x, y: wide ? 16 : [22, 186, 386][i], 'text-anchor': 'middle' }, flow, t));
-
     if (wide) {
       const you = el('g', {}, flow);
       el('circle', { cx: 40, cy: 175, r: 24, fill: '#EAE8E1' }, you);
@@ -575,6 +570,22 @@
     });
 
     L.dots = el('g', {}, flow);
+
+    // column labels: chips drawn last, so wires and dots pass under them.
+    // (A paint-order stroke halo breaks per glyph in Safari when letter-spacing is set.)
+    const cols = wide
+      ? [[40, 'You'], [185, 'Accounts'], [435, 'Terminals'], [645, 'Databases']]
+      : [[W / 2, 'Accounts in Keychain'], [W / 2, 'Terminals'], [W / 2, 'Databases']];
+    const chips = cols.map(([x, t], i) => {
+      const y = wide ? 13 : [22, 186, 386][i], g = el('g', { class: 'col' }, flow);
+      return [el('rect', { y: y - 12.5, height: 18, rx: 9 }, g), el('text', { x, y, 'text-anchor': 'middle' }, g, t)];
+    });
+    // getBBox, not getComputedTextLength: WebKit leaves letter-spacing out of the latter.
+    const fit = () => chips.forEach(([r, t]) => {
+      const b = t.getBBox();
+      r.setAttribute('x', b.x - 10); r.setAttribute('width', b.width + 20);
+    });
+    fit(); document.fonts?.ready.then(fit);
     return L;
   }
 
